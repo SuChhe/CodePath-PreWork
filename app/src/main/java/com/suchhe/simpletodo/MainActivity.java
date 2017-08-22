@@ -1,5 +1,6 @@
 package com.suchhe.simpletodo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -51,6 +52,18 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
+                launchCompositeView(items.get(pos));
+            }
+        });
+    }
+
+    public void launchCompositeView(String item) {
+        Intent i = new Intent(MainActivity.this, EditItemActivity.class);
+        i.putExtra("item", item);
+        startActivity(i);
     }
 
     private void readItems() {
