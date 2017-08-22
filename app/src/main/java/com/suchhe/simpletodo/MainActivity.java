@@ -22,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     ListView lvItems;
     ArrayList<String> items;
     ArrayAdapter<String> itemsAdapter;
+    private int editPos;
+
+    private final int REQUEST_CODE = 200; // Edit Item, launching an activity for a result
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
+                editPos = pos;
                 launchCompositeView(items.get(pos));
             }
         });
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     public void launchCompositeView(String item) {
         Intent i = new Intent(MainActivity.this, EditItemActivity.class);
         i.putExtra("item", item);
-        startActivity(i);
+        startActivityForResult(i, REQUEST_CODE);
     }
 
     private void readItems() {
@@ -83,6 +87,17 @@ public class MainActivity extends AppCompatActivity {
             FileUtils.writeLines(todoFile,items);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // REQUEST_CODE is defined above
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            // Extract name value from result extras
+            String editedItem = data.getExtras().getString("editedItem");
+            items.set(editPos,editedItem);
+            writeItems();
+            itemsAdapter.notifyDataSetChanged();
         }
     }
 
